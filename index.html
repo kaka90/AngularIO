@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <title>Hotel</title>
+</head>
+<script src="angular.min.js"></script>
+<script src="angular-ui-router.min.js"></script>
+<body>
+
+
+
+<div ng-app="hotelApp" ng-controller="hotelCtrl">
+
+    <div class="navbar">
+        <ul class="nav">
+            <li><a ui-sref="home">Home</a></li>
+            <li><a ui-sref="contact">Contact</a></li>
+        </ul>
+    </div>
+
+    <br>
+
+    <form name="myForm">
+        Number:<br> <input name="number" type="text" ng-model="room.number" required validationDirective><br>
+        Size:<br><input name="size" type="text" ng-model="room.size"><br>
+        Price:<br><input name="price" type="text" ng-model="room.price"><br>
+        Booked by:<br><input type="text" ng-model="room.bookedBy"><br>
+        <br>
+        <button ng-click="dodaj()">Add / Edit</button>
+        <button ng-click="usun()">Remove</button>
+        <hr>
+    </form>
+
+    <table border="1" width="100%">
+        <tr>
+            <th>Number</th>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Free</th>
+            <th>Booked by</th>
+        </tr>
+        <tr ng-repeat="r in rooms | orderBy:'number'">
+            <td>{{r.number}}</td>
+            <td>{{r.size}}</td>
+            <td>{{r.price | currencyFormat}}</td>
+            <td>{{r.free}}</td>
+            <td>{{r.bookedBy}}</td>
+        </tr>
+    </table>
+
+</div>
+
+<script>
+    var app = angular.module('hotelApp', ['ui.router']);
+
+
+    app.controller('hotelCtrl', function($scope) {
+        $scope.rooms = [];
+
+
+
+
+        for (var i = 0; i < 15; i++) {
+            $scope.rooms.push({
+                number: i + 1,
+                size: Math.floor(1 + i / 6),
+                price: Math.floor(100 + (i * i / 2)),
+                free: true,
+                bookedBy: ''});
+        }
+
+        $scope.room = {
+            number: 16,
+            size: '',
+            price: '',
+            free: true,
+            bookedBy: ''
+        };
+
+        $scope.dodaj = function() {
+
+            if ($scope.room.number == '' || $scope.room.size == '' || $scope.room.price == '') {
+                return;
+            }
+
+
+            if ($scope.room.bookedBy != '') {
+                $scope.room.free = false;
+            }
+
+            var edited = false;
+
+            for (var i = 0; i < $scope.rooms.length; i++) {
+
+                if ($scope.rooms[i].number == $scope.room.number) {
+                    $scope.rooms[i] = angular.copy($scope.room);
+                    edited = true;
+                    break;
+                }
+            }
+
+            if (!edited) {
+                $scope.rooms.push(angular.copy($scope.room));
+            }
+
+            $scope.room = {
+                number: $scope.rooms.length + 1,
+                size: '',
+                price: '',
+                free: true,
+                bookedBy: ''
+            };
+        };
+
+        $scope.usun = function() {
+            if ($scope.room.number == '') {
+                return;
+            }
+
+            for (var i = 0; i < $scope.rooms.length; i++) {
+
+                if ($scope.rooms[i].number == $scope.room.number) {
+                    $scope.rooms.splice(i, 1);
+                    return;
+                }
+            }
+        };
+    });
+
+    app.service('addDollarSign', function() {
+        this.myFunc = function (x) {
+            return x + " $";
+        }
+    });
+
+    app.filter('currencyFormat',['addDollarSign', function(addDollarSign) {
+        return function(x) {
+            return addDollarSign.myFunc(x);
+        };
+    }]);
+
+    app.config(function($stateProvider, $urlRouterProvider) {
+        $urlRouterProvider.otherwise("/home");
+        $stateProvider
+                .state('home', {
+                    url: "/home",
+                    templateUrl: "templates/home.html"
+                })
+                .state('contact', {
+                    url: "/contact",
+                    templateUrl: "templates/contact.html"
+                });
+    });
+
+</script>
+
+</body>
+</html>

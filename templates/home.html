@@ -1,0 +1,30 @@
+
+<form name="myForm">
+    Number:<br> <input name="number" type="text" ng-model="room.number" required><br>
+    Size:<br><input name="size" type="text" ng-model="room.size"><br>
+    Price:<br><input name="price" type="text" ng-model="room.price"><br>
+    Booked by:<br><input type="text" ng-model="room.bookedBy"><br>
+    <br>
+    <button ng-click="dodaj()">Add / Edit</button>
+    <button ng-click="usun()">Remove</button>
+    <hr>
+    <hr>
+    <br><br>
+</form>
+
+<table border="1" width="100%">
+    <tr>
+        <th>Number</th>
+        <th>Size</th>
+        <th>Price</th>
+        <th>Free</th>
+        <th>Booked by</th>
+    </tr>
+    <tr ng-repeat="r in rooms | orderBy:'number'">
+        <td>{{r.number}}</td>
+        <td>{{r.size}}</td>
+        <td>{{r.price | currencyFormat}}</td>
+        <td>{{r.free}}</td>
+        <td>{{r.bookedBy}}</td>
+    </tr>
+</table>
